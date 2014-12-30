@@ -19,6 +19,8 @@ class BaseSource
 
     public static $logger;
 
+    public static $logPath;
+
     private $flowItem;
 
     private $typeItem;
@@ -55,11 +57,11 @@ class BaseSource
         }
 
         if (!self::$logger) {
-            self::$logger = new Logger('KeikogiNDT');
+            self::$logger = new Logger('Keikogi');
 
             self::$logger->pushHandler(
                 new StreamHandler(
-                    __DIR__ . '/../../../log/log.log', Logger::DEBUG
+                    self::$logPath, Logger::DEBUG
                 )
             );
         }
@@ -67,10 +69,16 @@ class BaseSource
         $this->count = 0;
     }
 
-    public function __construct()
+    public function __construct($options = array())
     {
         set_time_limit(0);
         date_default_timezone_set('Etc/GMT-5');
+
+        if (isset($options['log.path'])) {
+            self::$logPath = $options['log.path'];
+        } else {
+            self::$logPath = 'news_delivery.log';
+        }
 
         $this->init();
     }
