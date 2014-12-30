@@ -1,5 +1,5 @@
-Keikogi News Delivery Tools
-===========================
+Keikogi News Delivery Tool
+==========================
 
 Requirements
 ------------
