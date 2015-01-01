@@ -23,3 +23,17 @@ Add this to a composer.json file:
     "keikogi/news-delivery": ">=1.0.0"
 }
 ```
+
+Usage
+-----
+```php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Keikogi\NewsDelivery\Source\Innogest;
+
+$options = array(
+    'log.path' => __DIR__ . '/log/news_delivery.log'
+);
+
+(new Innogest($options))->run();
+```
