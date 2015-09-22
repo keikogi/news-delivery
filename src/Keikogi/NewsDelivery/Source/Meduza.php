@@ -7,7 +7,7 @@ use Keikogi\NewsDelivery\Core\SourceInterface;
 
 class Meduza extends BaseSource implements SourceInterface
 {
-    const BASE_URL = 'https://meduza.io/api/v1/';
+    const BASE_URL = 'https://meduza.io/api/v3/';
 
     public function url()
     {
