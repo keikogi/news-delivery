@@ -31,9 +31,19 @@ class BaseSource
 
     private $count;
 
+    private $debug;
+
+    private function IsDebug() {
+        return $this->debug == true;
+    }
+
+    private function IsNotDebug() {
+        return $this->debug == false;
+    }
+
     private function init()
     {
-        if (!self::$mongo) {
+        if (!self::$mongo && $this->IsNotDebug()) {
             $connection = new \Mongo('localhost');
 
             self::$mongo = $connection->test;
@@ -80,6 +90,11 @@ class BaseSource
             self::$logPath = 'news_delivery.log';
         }
 
+        $this->debug = false;
+        if (isset($options['debug'])) {
+            $this->debug = $options['debug'];
+        }
+
         $this->init();
     }
 
@@ -124,6 +139,10 @@ class BaseSource
 
     public function checkExists()
     {
+        if ($this->IsDebug()) {
+            return false;
+        }
+
         $type = $this->type();
 
         $itemCount = self::$mongo->items->find(
@@ -162,6 +181,15 @@ class BaseSource
 
         ++$this->count;
         $type = $this->type();
+
+        if ($this->IsDebug()) {
+            echo "PREVIEW:\n";
+            var_dump($this->getItem());
+            echo "FULL:\n";
+            var_dump($this->getTypeItem());
+            echo "\n\n";
+            return true;
+        }
 
         self::$mongo->items->insert($this->getItem());
         self::$mongo->$type->insert($this->getTypeItem());
