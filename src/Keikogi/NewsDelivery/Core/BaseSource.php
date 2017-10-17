@@ -44,9 +44,7 @@ class BaseSource
     private function init()
     {
         if (!self::$mongo && $this->IsNotDebug()) {
-            $connection = new \Mongo('localhost');
-
-            self::$mongo = $connection->test;
+            self::$mongo = new \MongoDB\Driver\Manager('mongodb://localhost:27017');
         }
 
         if (!self::$curl) {
@@ -145,21 +143,17 @@ class BaseSource
 
         $type = $this->type();
 
-        $itemCount = self::$mongo->items->find(
-            array(
-                self::URL_FIELD => $this->url()
-            )
-        )->count();
+        $query = new \MongoDB\Driver\Query([self::URL_FIELD => $this->url()]);
+        $cursor = self::$mongo->executeQuery('test.items', $query);
+        $itemCount = iterator_count($cursor);
 
         if ($itemCount) {
             return true;
         }
 
-        $typeCount = self::$mongo->$type->find(
-            array(
-                self::URL_TYPE_FIELD => $this->url()
-            )
-        )->count();
+        $query = new \MongoDB\Driver\Query([self::URL_TYPE_FIELD => $this->url()]);
+        $cursor = self::$mongo->executeQuery('test.' . $type, $query);
+        $typeCount = iterator_count($cursor);
 
         if ($typeCount) {
             return true;
@@ -191,8 +185,13 @@ class BaseSource
             return true;
         }
 
-        self::$mongo->items->insert($this->getItem());
-        self::$mongo->$type->insert($this->getTypeItem());
+        $bulk = new \MongoDB\Driver\BulkWrite();
+        $bulk->insert($this->getItem());
+        self::$mongo->executeBulkWrite('test.items', $bulk);
+
+        $bulk = new \MongoDB\Driver\BulkWrite();
+        $bulk->insert($this->getTypeItem());
+        self::$mongo->executeBulkWrite('test.' . $type, $bulk);
     }
 
     public function __destruct()
