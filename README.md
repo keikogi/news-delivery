@@ -3,11 +3,11 @@ Keikogi News Delivery Tool
 
 Requirements
 ------------
-PHP 5.3+
+PHP 7.0+
 
-PHP Mongo extension 1.5+
+PHP Mongo extension 1.3+
 
-MongoDB 2.6+
+MongoDB 3.4+
 
 Installation
 ------------
